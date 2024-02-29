@@ -1,12 +1,10 @@
-import {
-  SubscriptionHandshakeLink,
-  CONTROL_EVENTS_KEY
-} from "./subscription-handshake-link";
-import { ApolloLink, Observable } from "@apollo/client/core";
+import { ApolloLink } from "@apollo/client/core";
 import { createHttpLink } from "@apollo/client/link/http";
 import { getMainDefinition } from "@apollo/client/utilities";
-import { NonTerminatingLink } from "./non-terminating-link";
+
 import type { OperationDefinitionNode } from "graphql";
+
+const CONTROL_EVENTS_KEY = '@@controlEvents';
 
 import {
   AppSyncRealTimeSubscriptionHandshakeLink,
@@ -18,45 +16,15 @@ function createSubscriptionHandshakeLink(
   resultsFetcherLink?: ApolloLink
 ): ApolloLink;
 function createSubscriptionHandshakeLink(
-  url: string,
-  resultsFetcherLink?: ApolloLink
-): ApolloLink;
-function createSubscriptionHandshakeLink(
-  infoOrUrl: AppSyncRealTimeSubscriptionConfig | string,
+  infoOrUrl: AppSyncRealTimeSubscriptionConfig,
   theResultsFetcherLink?: ApolloLink
 ) {
   let resultsFetcherLink: ApolloLink, subscriptionLinks: ApolloLink;
 
-  if (typeof infoOrUrl === "string") {
-    resultsFetcherLink =
-      theResultsFetcherLink || createHttpLink({ uri: infoOrUrl });
-    subscriptionLinks = ApolloLink.from([
-      new NonTerminatingLink("controlMessages", {
-        link: new ApolloLink(
-          (operation, _forward) =>
-            new Observable<any>(observer => {
-              const {
-                variables: { [CONTROL_EVENTS_KEY]: controlEvents, ...variables }
-              } = operation;
+  const { url } = infoOrUrl;
+  resultsFetcherLink = theResultsFetcherLink || createHttpLink({ uri: url });
+  subscriptionLinks = new AppSyncRealTimeSubscriptionHandshakeLink(infoOrUrl);
 
-              if (typeof controlEvents !== "undefined") {
-                operation.variables = variables;
-              }
-
-              observer.next({ [CONTROL_EVENTS_KEY]: controlEvents });
-
-              return () => { };
-            })
-        )
-      }),
-      new NonTerminatingLink("subsInfo", { link: resultsFetcherLink }),
-      new SubscriptionHandshakeLink("subsInfo")
-    ]);
-  } else {
-    const { url } = infoOrUrl;
-    resultsFetcherLink = theResultsFetcherLink || createHttpLink({ uri: url });
-    subscriptionLinks = new AppSyncRealTimeSubscriptionHandshakeLink(infoOrUrl);
-  }
 
   return ApolloLink.split(
     operation => {

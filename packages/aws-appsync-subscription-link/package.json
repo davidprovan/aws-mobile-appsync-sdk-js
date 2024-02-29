@@ -14,7 +14,7 @@
     "url": "https://github.com/awslabs/aws-mobile-appsync-sdk-js.git"
   },
   "scripts": {
-    "prepare": "tsc && cp -r src/vendor lib/vendor",
+    "prepare": "tsc",
     "test": "jest --coverage --coverageReporters=text",
     "test-watch": "jest --watch"
   },
@@ -25,8 +25,7 @@
     "zen-observable-ts": "^1.2.5"
   },
   "devDependencies": {
-    "@apollo/client": "^3.2.0",
-    "@redux-offline/redux-offline": "2.5.2-native.0"
+    "@apollo/client": "^3.9.5"
   },
   "peerDependencies": {
     "@apollo/client": "3.x"

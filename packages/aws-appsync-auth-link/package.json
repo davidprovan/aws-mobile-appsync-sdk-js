@@ -19,13 +19,13 @@
     "test-watch": "jest --watch"
   },
   "dependencies": {
-    "@aws-crypto/sha256-js": "^1.2.0",
-    "@aws-sdk/types": "^3.25.0",
-    "@aws-sdk/util-hex-encoding": "^3.29.0",
+    "@aws-crypto/sha256-js": "^5.2.0",
+    "@aws-sdk/types": "^3.523.0",
+    "@smithy/util-hex-encoding": "^2.1.1",
     "debug": "2.6.9"
   },
   "devDependencies": {
-    "@apollo/client": "^3.2.0"
+    "@apollo/client": "^3.9.5"
   },
   "peerDependencies": {
     "@apollo/client": "3.x"
